@@ -1,7 +1,11 @@
-from pydantic import BaseSettings
+from dotenv import load_dotenv
+import os
 
-class Settings(BaseSettings):
-    PROJECT_NAME: str = "AI Search Backend"
-    DATABASE_URL: str = "postgresql://app:changeme@localhost:5432/ai_search"
+# Загружаем .env
+load_dotenv()
+
+class Settings:
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
+    HF_TOKEN: str = os.getenv("HF_TOKEN")
 
 settings = Settings()

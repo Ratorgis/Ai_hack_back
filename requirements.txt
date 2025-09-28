@@ -1,5 +1,23 @@
+# Web framework
 fastapi
-uvicorn[standard]
+uvicorn
+
+# Pydantic для валидации запросов
 pydantic
+
+# Работа с базой данных (если понадобится)
 sqlalchemy
 psycopg2-binary
+
+# Векторный поиск
+faiss-cpu
+sentence-transformers
+
+# Загрузка файлов
+python-multipart
+
+# Работа с переменными окружения
+python-dotenv
+
+# HuggingFace LLM
+huggingface-hub
