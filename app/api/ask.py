@@ -1,26 +1,28 @@
+# app/api/ask.py
+
 from fastapi import APIRouter
 from pydantic import BaseModel
-from app.services import search_service, llm_service
+from app.services import llm_service, db_service
 
 router = APIRouter()
 
 class AskRequest(BaseModel):
     query: str
-    top_k: int = 5
 
 @router.post("/ask")
-async def ask_docs(request: AskRequest):
-    # 1. Получаем релевантные куски текста из FAISS
-    results = search_service.search(request.query, request.top_k)
+def ask(request: AskRequest):
+    # 1. Получаем SQL от LLM
+    sql_query = llm_service.nl2sql(request.query)
 
-    # 2. Собираем контекст
-    context = "\n".join([r["text"] for r in results])
+    # 2. Выполняем запрос в БД
+    try:
+        results = db_service.execute_sql(sql_query)
+    except Exception as e:
+        return {"error": str(e), "sql_query": sql_query}
 
-    # 3. Отправляем в HuggingFace LLM
-    answer = llm_service.generate_answer(context, request.query)
-
+    # 3. Возвращаем SQL и данные
     return {
-        "query": request.query,
-        "answer": answer,
-        "sources": results
+        "natural_query": request.query,
+        "sql_query": sql_query,
+        "results": results
     }
