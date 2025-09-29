@@ -21,3 +21,7 @@ python-dotenv
 
 # HuggingFace LLM
 huggingface-hub
+
+# 
+requests
+pandas

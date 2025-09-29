@@ -1,15 +1,20 @@
 from fastapi import FastAPI
-from app.api import health, ingest, search, ask
-from app.core.config import settings
+from fastapi.middleware.cors import CORSMiddleware
+from app.api import ask
+from app.api import health
 
-app = FastAPI(title=settings.PROJECT_NAME)
+# Инициализация приложения FastAPI
+app = FastAPI(title="AI Search Backend", version="1.0")
 
-# Routers
-app.include_router(health.router, prefix = "/api")
-app.include_router(ingest.router, prefix = '/api')
-app.include_router(search.router, prefix = '/api')
-app.include_router(ask.router, prefix = '/api')
+# Настраиваем CORS (чтобы фронтенд на HTML/JS мог обращаться к API)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # в проде лучше указывать конкретный фронт-домен
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get("/")
-def root():
-    return {"message": "AI_Search_Backend is running"}
+# Подключаем роутеры
+app.include_router(health.router, prefix="/api/health", tags=["health"])
+app.include_router(ask.router, prefix="/api/ask", tags=["ask"])
